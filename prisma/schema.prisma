@@ -1,12 +1,170 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id           String @id @default(uuid()) @db.Uuid
+  name         String
+  email        String @unique
+  passwordHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workouts        Workout[]
+  templates       WorkoutTemplate[]
+  personalRecords PersonalRecord[]
+}
+
+model Exercise {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  equipment   String
+  category    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  muscleGroups      ExerciseMuscleGroup[]
+  workoutExercises  WorkoutExercise[]
+  templateExercises TemplateExercise[]
+  personalRecords   PersonalRecord[]
+
+  @@index([name])
+  @@index([category])
+  @@index([equipment])
+}
+
+model MuscleGroup {
+  id   String @id @default(uuid()) @db.Uuid
+  name String @unique
+
+  exercises ExerciseMuscleGroup[]
+}
+
+model ExerciseMuscleGroup {
+  exerciseId    String  @db.Uuid
+  muscleGroupId String  @db.Uuid
+  isPrimary     Boolean @default(false)
+
+  exercise    Exercise    @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  muscleGroup MuscleGroup @relation(fields: [muscleGroupId], references: [id], onDelete: Cascade)
+
+  @@id([exerciseId, muscleGroupId])
+  @@index([muscleGroupId])
+}
+
+model Workout {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  status    String    @default("IN_PROGRESS")
+  notes     String?
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercises WorkoutExercise[]
+
+  @@index([userId, startedAt])
+  @@index([userId, status])
+}
+
+model WorkoutExercise {
+  id       String  @id @default(uuid()) @db.Uuid
+  position Int
+  notes    String?
+
+  workoutId  String @db.Uuid
+  exerciseId String @db.Uuid
+
+  workout  Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  sets WorkoutSet[]
+
+  @@unique([workoutId, position])
+  @@index([exerciseId])
+}
+
+model WorkoutSet {
+  id        String   @id @default(uuid()) @db.Uuid
+  setNumber Int
+  setType   String   @default("NORMAL")
+  weight    Decimal  @db.Decimal(7, 2)
+  reps      Int
+  rpe       Decimal? @db.Decimal(3, 1)
+
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+
+  workoutExerciseId String          @db.Uuid
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  personalRecords PersonalRecord[]
+
+  @@unique([workoutExerciseId, setNumber])
+}
+
+model WorkoutTemplate {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercises TemplateExercise[]
+
+  @@index([userId])
+}
+
+model TemplateExercise {
+  id          String @id @default(uuid()) @db.Uuid
+  position    Int
+  targetSets  Int
+  minReps     Int?
+  maxReps     Int?
+  restSeconds Int?
+
+  targetWeight Decimal? @db.Decimal(7, 2)
+
+  templateId String @db.Uuid
+  exerciseId String @db.Uuid
+
+  template WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exercise Exercise        @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  @@unique([templateId, position])
+  @@index([exerciseId])
+}
+
+model PersonalRecord {
+  id         String   @id @default(uuid()) @db.Uuid
+  recordType String
+  value      Decimal  @db.Decimal(10, 2)
+  achievedAt DateTime @default(now())
+
+  userId       String @db.Uuid
+  exerciseId   String @db.Uuid
+  workoutSetId String @db.Uuid
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  workoutSet WorkoutSet @relation(fields: [workoutSetId], references: [id], onDelete: Cascade)
+
+  @@unique([workoutSetId, recordType])
+  @@index([userId, exerciseId, recordType, achievedAt])
 }
