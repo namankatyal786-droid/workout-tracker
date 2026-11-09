@@ -184,7 +184,9 @@ The project also explores desktop application development using Electron, fronte
 
 ## 👨‍💻 Author
 
-**Sarthak Jaiswal**
+**Sarthak Jaiswal** 
+**Arnav Maheshwari**
+**Naman Katyal**
 
 Full Stack Developer | Computer Science Student
 
