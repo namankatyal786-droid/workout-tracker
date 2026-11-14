@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import "../styles/Stats.css";
 
-const API_URL = "http://localhost:5001/api/stats";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://workout-tracker-production-a67a1737.up.railway.app/api";
+
+const API_URL = `${API_BASE_URL}/stats`;
 
 function Stats() {
   const [stats, setStats] = useState(null);
@@ -54,23 +58,22 @@ function Stats() {
     );
   }
 
-  const selectedProgression = stats.exerciseProgression.find(
+  const { overview, weeklyVolume, muscleGroupBreakdown, exerciseProgression } = stats;
+
+  const selectedProgression = exerciseProgression.find(
     (exercise) => exercise.name === selectedExercise
   );
 
   const maxWeeklyVolume = Math.max(
-    ...stats.weeklyVolume.map((week) => week.volume),
-    1
+    ...weeklyVolume.map((week) => week.volume), 1
   );
 
   const maxMuscleVolume = Math.max(
-    ...stats.muscleGroupBreakdown.map((group) => group.volume),
-    1
+    ...muscleGroupBreakdown.map((group) => group.volume), 1
   );
 
   const maxExerciseWeight = Math.max(
-    ...(selectedProgression?.entries.map((entry) => entry.maxWeight) || [1]),
-    1
+    ...(selectedProgression?.entries.map((entry) => entry.maxWeight) || [1]), 1
   );
 
   return (
@@ -88,27 +91,22 @@ function Stats() {
       <section className="stats-overview">
         <div className="stats-card">
           <span>Total Workouts</span>
-          <strong>{stats.overview.totalWorkouts}</strong>
+          <strong>{overview.totalWorkouts}</strong>
           <small>Completed sessions</small>
         </div>
-
         <div className="stats-card">
           <span>Total Volume</span>
-          <strong>
-            {stats.overview.totalVolume.toLocaleString("en-IN")}
-          </strong>
+          <strong>{overview.totalVolume.toLocaleString("en-IN")}</strong>
           <small>kg lifted</small>
         </div>
-
         <div className="stats-card">
           <span>Completed Sets</span>
-          <strong>{stats.overview.totalSets}</strong>
+          <strong>{overview.totalSets}</strong>
           <small>Across all workouts</small>
         </div>
-
         <div className="stats-card">
           <span>Training Time</span>
-          <strong>{stats.overview.trainingHours}h</strong>
+          <strong>{overview.trainingHours}h</strong>
           <small>Total workout duration</small>
         </div>
       </section>
@@ -123,21 +121,17 @@ function Stats() {
         </div>
 
         <div className="volume-chart">
-          {stats.weeklyVolume.map((week) => (
+          {weeklyVolume.map((week) => (
             <div className="volume-column" key={week.week}>
               <span className="volume-value">
                 {week.volume > 0 ? week.volume.toLocaleString("en-IN") : ""}
               </span>
-
               <div className="volume-bar-area">
                 <div
                   className="volume-bar"
-                  style={{
-                    height: `${(week.volume / maxWeeklyVolume) * 100}%`,
-                  }}
+                  style={{ height: `${(week.volume / maxWeeklyVolume) * 100}%` }}
                 />
               </div>
-
               <span className="volume-label">{week.label}</span>
             </div>
           ))}
@@ -153,25 +147,20 @@ function Stats() {
             </div>
           </div>
 
-          {stats.muscleGroupBreakdown.length === 0 ? (
-            <p className="stats-empty">
-              No muscle group data is available yet.
-            </p>
+          {muscleGroupBreakdown.length === 0 ? (
+            <p className="stats-empty">No muscle group data is available yet.</p>
           ) : (
             <div className="muscle-list">
-              {stats.muscleGroupBreakdown.map((group) => (
+              {muscleGroupBreakdown.map((group) => (
                 <div className="muscle-item" key={group.name}>
                   <div className="muscle-item-info">
                     <strong>{group.name}</strong>
                     <span>{group.volume.toLocaleString("en-IN")} kg</span>
                   </div>
-
                   <div className="muscle-progress-track">
                     <div
                       className="muscle-progress-fill"
-                      style={{
-                        width: `${(group.volume / maxMuscleVolume) * 100}%`,
-                      }}
+                      style={{ width: `${(group.volume / maxMuscleVolume) * 100}%` }}
                     />
                   </div>
                 </div>
@@ -188,7 +177,7 @@ function Stats() {
             </div>
           </div>
 
-          {stats.exerciseProgression.length === 0 ? (
+          {exerciseProgression.length === 0 ? (
             <p className="stats-empty">No exercise data available yet.</p>
           ) : (
             <>
@@ -197,7 +186,7 @@ function Stats() {
                 value={selectedExercise}
                 onChange={(event) => setSelectedExercise(event.target.value)}
               >
-                {stats.exerciseProgression.map((exercise) => (
+                {exerciseProgression.map((exercise) => (
                   <option key={exercise.name} value={exercise.name}>
                     {exercise.name}
                   </option>
@@ -209,12 +198,9 @@ function Stats() {
                   <div className="progression-summary">
                     <span>Best recorded weight</span>
                     <strong>
-                      {Math.max(
-                        ...selectedProgression.entries.map(
-                          (entry) => entry.maxWeight
-                        )
-                      )}{" "}
-                      kg
+                      {Math.max(...selectedProgression.entries.map(
+                        (entry) => entry.maxWeight
+                      ))} kg
                     </strong>
                   </div>
 
@@ -232,7 +218,6 @@ function Stats() {
                             }}
                           />
                         </div>
-
                         <strong>{entry.maxWeight} kg</strong>
                         <span>
                           {new Date(entry.date).toLocaleDateString("en-IN", {

@@ -9,7 +9,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
-const DEMO_USER_ID = "8c581a51-7da0-4390-a755-4d53b10663f6";
+const DEMO_USER_ID = "90816367-c8d1-4d69-afc0-49b41eba4a21";
 
 app.use(cors());
 app.use(express.json());

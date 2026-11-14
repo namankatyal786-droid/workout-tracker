@@ -3,14 +3,11 @@ import { WEEKLY_ROUTINE, DAY_KEYS } from "../data/routineData";
 import "../styles/Workout.css";
 
 export default function StartWorkout() {
-  // Automatically detect current day of the week (0 = Sunday, 1 = Monday, etc.)
   const todayIndex = new Date().getDay();
   const todayKey = DAY_KEYS[todayIndex];
 
-  // Selected day tab state: strictly defaults to TODAY on every page load / refresh!
   const [selectedDay, setSelectedDay] = useState(todayKey);
 
-  // Today's date string (YYYY-MM-DD) for persistent local completion tracking
   const todayDateStr = new Date().toISOString().slice(0, 10);
   const completionStorageKey = `workout_completed_${todayDateStr}`;
 

@@ -1,6 +1,10 @@
 
 import { useEffect, useState } from "react";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://workout-tracker-production-a67a1737.up.railway.app/api";
+
 function Dashboard() {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -9,7 +13,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/dashboard");
+        const response = await fetch(`${API_BASE_URL}/dashboard`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch dashboard data");

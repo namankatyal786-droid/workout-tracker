@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { submitScore, getLeaderboard } from "../utils/api";
 import "../styles/Games.css";
 
-// Game metadata helper
 const GAME_DETAILS = {
   "bag-catcher": {
     title: "Dumbbell Catcher",
