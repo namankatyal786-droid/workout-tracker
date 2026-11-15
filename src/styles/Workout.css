@@ -1024,3 +1024,73 @@
 .session-note-input:focus {
   border-color: #a5e6b9;
 }
+
+/* Custom Exercise Addition */
+.btn-add-exercise-routine {
+  background: #151d18;
+  border: 1px dashed #386b4a;
+  color: #a5e6b9;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-add-exercise-routine:hover {
+  background: #1c2b20;
+  border-color: #a5e6b9;
+  transform: translateY(-1px);
+}
+
+.btn-remove-custom-ex {
+  background: transparent;
+  border: 1px solid rgba(230, 57, 70, 0.4);
+  color: #e63946;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-remove-custom-ex:hover {
+  background: rgba(230, 57, 70, 0.2);
+  border-color: #e63946;
+}
+
+.quick-add-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #101512;
+  border: 1px solid #284432;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-add-item-row:hover {
+  background: #1c2b20;
+  border-color: #386b4a;
+}
+
+.btn-quick-add {
+  background: #254b34;
+  border: 1px solid #386b4a;
+  color: #a5e6b9;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}

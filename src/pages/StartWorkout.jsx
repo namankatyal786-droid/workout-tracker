@@ -44,6 +44,11 @@ export default function StartWorkout() {
   const [sessionNote, setSessionNote] = useState("");
   const [energyRating, setEnergyRating] = useState(4);
 
+  // Dynamic custom exercises added by user to active routine
+  const [extraExercises, setExtraExercises] = useState({});
+  const [isAddingExercise, setIsAddingExercise] = useState(false);
+  const [addSearchQuery, setAddSearchQuery] = useState("");
+
   // Rest interval countdown timer state
   const [restTimer, setRestTimer] = useState({
     active: false,
@@ -55,6 +60,52 @@ export default function StartWorkout() {
 
   const activeRoutine = WEEKLY_ROUTINE[selectedDay] || WEEKLY_ROUTINE.mon;
   const isSelectedDayToday = selectedDay === todayKey;
+
+  const currentExtraExercises = extraExercises[selectedDay] || [];
+  const currentRoutineExercises = [...(activeRoutine.exercises || []), ...currentExtraExercises];
+
+  const QUICK_EXERCISES = [
+    { name: "Push Ups", muscle: "Chest & Triceps", defaultWeight: "Bodyweight", rest: 60, tip: "Keep core tight." },
+    { name: "Cable Face Pull", muscle: "Shoulders (Rear)", defaultWeight: "20 kg", rest: 60, tip: "Pull to nose level." },
+    { name: "Dumbbell Lateral Raise", muscle: "Shoulders (Side)", defaultWeight: "10 kg", rest: 60, tip: "Lead with elbows." },
+    { name: "Hanging Leg Raise", muscle: "Core & Abs", defaultWeight: "Bodyweight", rest: 60, tip: "Avoid swinging." },
+    { name: "Barbell Deadlift", muscle: "Back & Hamstrings", defaultWeight: "80 kg", rest: 120, tip: "Keep spine neutral." },
+    { name: "Barbell Hip Thrust", muscle: "Glutes", defaultWeight: "70 kg", rest: 90, tip: "Full lockout at top." },
+    { name: "Standing Calf Raise", muscle: "Calves", defaultWeight: "40 kg", rest: 60, tip: "Full stretch at bottom." },
+    { name: "Hammer Curl", muscle: "Biceps & Forearms", defaultWeight: "14 kg", rest: 60, tip: "Neutral palms grip." },
+    { name: "Overhead Triceps Extension", muscle: "Triceps (Long Head)", defaultWeight: "18 kg", rest: 60, tip: "Keep elbows tucked." }
+  ];
+
+  const handleAddExerciseToRoutine = (ex) => {
+    const existingCount = (extraExercises[selectedDay] || []).length;
+    const cleanSlug = ex.name.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    const newEx = {
+      id: `custom-${cleanSlug}-${existingCount + 1}`,
+      name: ex.name,
+      muscle: ex.muscle,
+      sets: 3,
+      reps: "10 - 12",
+      targetWeight: ex.defaultWeight,
+      restSeconds: ex.rest,
+      tip: ex.tip,
+      isCustom: true
+    };
+
+    setExtraExercises((prev) => ({
+      ...prev,
+      [selectedDay]: [...(prev[selectedDay] || []), newEx]
+    }));
+
+    setIsAddingExercise(false);
+    setAddSearchQuery("");
+  };
+
+  const handleRemoveCustomExercise = (id) => {
+    setExtraExercises((prev) => ({
+      ...prev,
+      [selectedDay]: (prev[selectedDay] || []).filter((e) => e.id !== id)
+    }));
+  };
 
   // Active session stopwatch timer
   useEffect(() => {
@@ -124,7 +175,7 @@ export default function StartWorkout() {
     }));
 
     if (willBeCompleted) {
-      const currentEx = activeRoutine.exercises?.find((e) => e.id === exerciseId);
+      const currentEx = currentRoutineExercises?.find((e) => e.id === exerciseId);
       const restSec = currentEx?.restSeconds || 60;
       setRestTimer({
         active: true,
@@ -349,7 +400,7 @@ export default function StartWorkout() {
           {!activeRoutine.isHoliday && (
             <div className="routine-meta-pills">
               <span className="meta-pill">⏱️ {activeRoutine.estimatedMinutes} mins</span>
-              <span className="meta-pill">📋 {activeRoutine.exercises.length} Exercises</span>
+              <span className="meta-pill">📋 {currentRoutineExercises.length} Exercises</span>
             </div>
           )}
         </div>
@@ -392,7 +443,7 @@ export default function StartWorkout() {
             </div>
 
             <div className="exercise-cards-container">
-              {activeRoutine.exercises.map((exercise, exIdx) => (
+              {currentRoutineExercises.map((exercise, exIdx) => (
                 <div key={exercise.id} className="exercise-card">
                   <div className="exercise-card-header">
                     <div className="ex-number">{exIdx + 1}</div>
@@ -400,6 +451,7 @@ export default function StartWorkout() {
                       <h4>{exercise.name}</h4>
                       <span className="ex-muscle-tag">{exercise.muscle}</span>
                     </div>
+
                     <div className="ex-target-metrics">
                       <div className="metric-box">
                         <span className="metric-label">SETS</span>
@@ -418,6 +470,17 @@ export default function StartWorkout() {
                         <span className="metric-value">{exercise.restSeconds}s</span>
                       </div>
                     </div>
+
+                    {exercise.isCustom && (
+                      <button
+                        type="button"
+                        className="btn-remove-custom-ex"
+                        onClick={() => handleRemoveCustomExercise(exercise.id)}
+                        title="Remove custom exercise"
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
 
                   {/* Form Cue Tip */}
@@ -452,6 +515,19 @@ export default function StartWorkout() {
                 </div>
               ))}
             </div>
+
+            {/* Add Exercise to Routine Button */}
+            {!activeRoutine.isHoliday && (
+              <div style={{ marginTop: "16px", marginBottom: "16px", textAlign: "center" }}>
+                <button
+                  type="button"
+                  className="btn-add-exercise-routine"
+                  onClick={() => setIsAddingExercise(true)}
+                >
+                  <span>＋</span> Add Exercise to Today&apos;s Split
+                </button>
+              </div>
+            )}
 
             {/* Session Reflection & Energy Input */}
             {isSessionActive && (
@@ -502,6 +578,73 @@ export default function StartWorkout() {
           </div>
         )}
       </div>
+
+      {/* Quick Add Exercise Modal */}
+      {isAddingExercise && (
+        <div className="calc-modal-overlay" onClick={() => setIsAddingExercise(false)}>
+          <div className="calc-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="calc-header">
+              <div>
+                <h3>Add Exercise to {activeRoutine.dayName}&apos;s Workout</h3>
+                <p style={{ color: "#8a9c90", fontSize: "13px", margin: 0 }}>
+                  Select an exercise to append to your active split routine.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="calc-close-btn"
+                onClick={() => setIsAddingExercise(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ marginBottom: "16px" }}>
+              <input
+                type="text"
+                className="library-search-input"
+                placeholder="Search exercise to add..."
+                value={addSearchQuery}
+                onChange={(e) => setAddSearchQuery(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <div
+              style={{
+                maxHeight: "300px",
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px"
+              }}
+            >
+              {QUICK_EXERCISES.filter((ex) =>
+                ex.name.toLowerCase().includes(addSearchQuery.toLowerCase()) ||
+                ex.muscle.toLowerCase().includes(addSearchQuery.toLowerCase())
+              ).map((ex) => (
+                <div
+                  key={ex.name}
+                  className="quick-add-item-row"
+                  onClick={() => handleAddExerciseToRoutine(ex)}
+                >
+                  <div>
+                    <strong style={{ color: "#ffffff", display: "block", fontSize: "14px" }}>
+                      {ex.name}
+                    </strong>
+                    <span style={{ color: "#a5e6b9", fontSize: "12px" }}>
+                      {ex.muscle} • {formatDisplayWeight(ex.defaultWeight)}
+                    </span>
+                  </div>
+                  <button type="button" className="btn-quick-add">
+                    ＋ Add
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Rest Timer Widget */}
       {restTimer.active && (
