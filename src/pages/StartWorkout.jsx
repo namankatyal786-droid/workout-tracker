@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WEEKLY_ROUTINE, DAY_KEYS } from "../data/routineData";
 import "../styles/Workout.css";
 
@@ -35,10 +35,36 @@ export default function StartWorkout() {
 
   // Active workout session tracker state
   const [isSessionActive, setIsSessionActive] = useState(false);
+  const [sessionElapsedSeconds, setSessionElapsedSeconds] = useState(0);
+  const [lastSessionSummary, setLastSessionSummary] = useState(null);
   const [completedSets, setCompletedSets] = useState({});
 
   const activeRoutine = WEEKLY_ROUTINE[selectedDay] || WEEKLY_ROUTINE.mon;
   const isSelectedDayToday = selectedDay === todayKey;
+
+  // Active session stopwatch timer
+  useEffect(() => {
+    let interval = null;
+    if (isSessionActive) {
+      interval = setInterval(() => {
+        setSessionElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isSessionActive]);
+
+  const formatStopwatchTime = (totalSec) => {
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    const hours = Math.floor(mins / 60);
+    const remMins = mins % 60;
+    if (hours > 0) {
+      return `${hours}:${String(remMins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
 
   // Toggle set completion checkbox
   const toggleSet = (exerciseId, setIdx) => {
@@ -51,7 +77,18 @@ export default function StartWorkout() {
 
   // Handle session finish: auto marks workout as completed!
   const handleFinishSession = () => {
+    const setsCount = Object.values(completedSets).filter(Boolean).length;
+    const finalSeconds = sessionElapsedSeconds;
+
+    setLastSessionSummary({
+      duration: formatStopwatchTime(finalSeconds),
+      completedSetsCount: setsCount,
+      routineName: activeRoutine.tag || activeRoutine.dayName
+    });
+
     setIsSessionActive(false);
+    setSessionElapsedSeconds(0);
+
     if (!isTodayCompleted) {
       setIsTodayCompleted(true);
       try {
@@ -82,16 +119,50 @@ export default function StartWorkout() {
           </p>
         </div>
 
-        {/* Start / Finish Workout Button */}
+        {/* Start / Finish Workout Button & Live Stopwatch */}
         {!activeRoutine.isHoliday && (
-          <button
-            className={`btn-start-session ${isSessionActive ? "btn-active-session" : ""}`}
-            onClick={isSessionActive ? handleFinishSession : () => setIsSessionActive(true)}
-          >
-            <span>{isSessionActive ? "✓ Finish Workout" : "▶ Start Workout"}</span>
-          </button>
+          <div className="workout-header-actions">
+            {isSessionActive && (
+              <div className="live-stopwatch-badge" title="Live Workout Duration">
+                <span className="stopwatch-dot"></span>
+                <span>{formatStopwatchTime(sessionElapsedSeconds)}</span>
+              </div>
+            )}
+            <button
+              className={`btn-start-session ${isSessionActive ? "btn-active-session" : ""}`}
+              onClick={isSessionActive ? handleFinishSession : () => setIsSessionActive(true)}
+            >
+              <span>{isSessionActive ? "✓ Finish Workout" : "▶ Start Workout"}</span>
+            </button>
+          </div>
         )}
       </div>
+
+      {/* Session Completion Summary Banner */}
+      {lastSessionSummary && (
+        <div className="session-summary-banner">
+          <div className="session-summary-info">
+            <span className="session-summary-icon">🏆</span>
+            <div>
+              <div className="session-summary-title">Workout Completed Successfully!</div>
+              <div className="session-summary-meta">
+                <span>Routine: <strong>{lastSessionSummary.routineName}</strong></span>
+                <span>•</span>
+                <span>Duration: <strong>{lastSessionSummary.duration}</strong></span>
+                <span>•</span>
+                <span>Sets Completed: <strong>{lastSessionSummary.completedSetsCount}</strong></span>
+              </div>
+            </div>
+          </div>
+          <button
+            className="session-summary-dismiss"
+            onClick={() => setLastSessionSummary(null)}
+            title="Dismiss summary"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Prominent Today's Workout Completed / Not Completed Toggle Bar */}
       <div className={`workout-status-bar ${isTodayCompleted ? "status-completed" : "status-pending"}`}>
