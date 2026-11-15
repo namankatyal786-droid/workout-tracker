@@ -1,0 +1,233 @@
+/* Settings & Profile Page Styles */
+
+.settings-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px 0 40px;
+}
+
+.settings-header {
+  margin-bottom: 28px;
+}
+
+.settings-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #a5e6b9;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.settings-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.settings-subtitle {
+  color: #8a9c90;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Sections */
+.settings-section {
+  background: #151d18;
+  border: 1px solid #26342b;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.settings-section-title {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-section-desc {
+  color: #8a9c90;
+  font-size: 13px;
+  margin: 0 0 20px 0;
+}
+
+/* Form Grid */
+.settings-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-field label {
+  color: #a5e6b9;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.settings-input,
+.settings-select {
+  background: #101512;
+  border: 1px solid #284432;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.settings-input:focus,
+.settings-select:focus {
+  border-color: #a5e6b9;
+}
+
+/* Toggle Options */
+.settings-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #1c2b20;
+}
+
+.settings-toggle-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.toggle-info h4 {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 2px 0;
+}
+
+.toggle-info p {
+  color: #8a9c90;
+  font-size: 12px;
+  margin: 0;
+}
+
+.unit-switch-buttons {
+  display: flex;
+  background: #101512;
+  border: 1px solid #284432;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.unit-btn {
+  background: transparent;
+  border: none;
+  color: #8a9c90;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unit-btn.active {
+  background: #254b34;
+  color: #a5e6b9;
+}
+
+/* Server Health Status Card */
+.server-status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #101512;
+  border: 1px solid #284432;
+  border-radius: 10px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.server-status-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.server-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #a5e6b9;
+  box-shadow: 0 0 10px #a5e6b9;
+}
+
+.server-dot.offline {
+  background: #e63946;
+  box-shadow: 0 0 10px #e63946;
+}
+
+.server-status-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.server-status-url {
+  color: #5d7566;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.server-refresh-btn {
+  background: #1c2b20;
+  border: 1px solid #284432;
+  color: #a5e6b9;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.server-refresh-btn:hover {
+  background: #254b34;
+}
+
+/* Save feedback button */
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-save-settings {
+  background: #254b34;
+  border: 1px solid #386b4a;
+  color: #a5e6b9;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save-settings:hover {
+  background: #2f6042;
+  box-shadow: 0 4px 15px rgba(37, 75, 52, 0.4);
+}
