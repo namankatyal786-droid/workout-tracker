@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import gamesRouter from "./routes/games.js";
+import exercisesRouter from "./routes/exercises.js";
 import prisma from "./lib/prisma.js";
 
 dotenv.config();
@@ -521,6 +522,7 @@ app.get("/api/stats", async (req, res) => {
 });
 
 app.use("/api/games", gamesRouter);
+app.use("/api/exercises", exercisesRouter);
 
 export default app;
 
