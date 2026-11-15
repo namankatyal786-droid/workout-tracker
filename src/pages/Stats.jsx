@@ -14,6 +14,11 @@ function Stats() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // One-Rep Max (1RM) Calculator state
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calcWeight, setCalcWeight] = useState(80);
+  const [calcReps, setCalcReps] = useState(6);
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -76,9 +81,22 @@ function Stats() {
     ...(selectedProgression?.entries.map((entry) => entry.maxWeight) || [1]), 1
   );
 
+  const estimated1RM = Math.round(
+    calcReps === 1 ? calcWeight : calcWeight * (1 + calcReps / 30)
+  );
+
+  const percentages = [
+    { pct: 95, reps: "2 reps", weight: Math.round(estimated1RM * 0.95) },
+    { pct: 90, reps: "4 reps", weight: Math.round(estimated1RM * 0.9) },
+    { pct: 85, reps: "6 reps", weight: Math.round(estimated1RM * 0.85) },
+    { pct: 80, reps: "8 reps", weight: Math.round(estimated1RM * 0.8) },
+    { pct: 75, reps: "10 reps", weight: Math.round(estimated1RM * 0.75) },
+    { pct: 70, reps: "12 reps", weight: Math.round(estimated1RM * 0.7) },
+  ];
+
   return (
     <div className="stats-page">
-      <div className="stats-header">
+      <div className="stats-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <p className="stats-eyebrow">PERFORMANCE OVERVIEW</p>
           <h1>Your Statistics</h1>
@@ -86,6 +104,15 @@ function Stats() {
             Understand your training volume and track your strength progress.
           </p>
         </div>
+
+        <button
+          type="button"
+          className="btn-open-calculator"
+          onClick={() => setShowCalculator(true)}
+          title="Open One-Rep Max Calculator"
+        >
+          <span>🧮</span> 1RM Calculator
+        </button>
       </div>
 
       <section className="stats-overview">
@@ -234,6 +261,91 @@ function Stats() {
           )}
         </section>
       </div>
+
+      {/* 1RM Calculator Modal */}
+      {showCalculator && (
+        <div className="calc-modal-overlay" onClick={() => setShowCalculator(false)}>
+          <div className="calc-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="calc-header">
+              <div>
+                <h3>One-Rep Max (1RM) Calculator</h3>
+                <p style={{ color: "#8a9c90", fontSize: "13px", margin: 0 }}>
+                  Estimate maximum strength potential based on standard Epley / Brzycki formulas.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="calc-close-btn"
+                onClick={() => setShowCalculator(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="calc-inputs-grid">
+              <div className="calc-input-group">
+                <label>Weight Lifted (kg)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="500"
+                  className="calc-input"
+                  value={calcWeight}
+                  onChange={(e) => setCalcWeight(Math.max(1, Number(e.target.value)))}
+                />
+              </div>
+
+              <div className="calc-input-group">
+                <label>Repetitions Completed</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="30"
+                  className="calc-input"
+                  value={calcReps}
+                  onChange={(e) => setCalcReps(Math.max(1, Math.min(30, Number(e.target.value))))}
+                />
+              </div>
+            </div>
+
+            <div className="calc-result-box">
+              <div className="calc-result-label">ESTIMATED 1-REP MAX</div>
+              <div className="calc-result-number">{estimated1RM} kg</div>
+            </div>
+
+            <div className="calc-table-wrap">
+              <table className="calc-table">
+                <thead>
+                  <tr>
+                    <th>Percentage</th>
+                    <th>Rep Target</th>
+                    <th>Working Weight</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {percentages.map((row) => (
+                    <tr key={row.pct}>
+                      <td><strong>{row.pct}%</strong></td>
+                      <td>{row.reps}</td>
+                      <td><strong style={{ color: "#a5e6b9" }}>{row.weight} kg</strong></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+              <button
+                type="button"
+                className="btn-open-calculator"
+                onClick={() => setShowCalculator(false)}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
