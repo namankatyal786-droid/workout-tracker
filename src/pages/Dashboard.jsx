@@ -37,7 +37,20 @@ function Dashboard() {
   }, []);
 
   if (loading) {
-    return <div className="dashboard">Loading dashboard...</div>;
+    return (
+      <div className="dashboard">
+        <div className="skeleton-loader-wrap">
+          <div className="skeleton-shimmer skeleton-header-box" />
+          <div className="skeleton-grid-4">
+            <div className="skeleton-shimmer skeleton-stat-card" />
+            <div className="skeleton-shimmer skeleton-stat-card" />
+            <div className="skeleton-shimmer skeleton-stat-card" />
+            <div className="skeleton-shimmer skeleton-stat-card" />
+          </div>
+          <div className="skeleton-shimmer skeleton-chart-panel" />
+        </div>
+      </div>
+    );
   }
 
   if (error) {

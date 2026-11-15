@@ -45,7 +45,20 @@ function Stats() {
   }, []);
 
   if (loading) {
-    return <div className="stats-page">Loading your statistics...</div>;
+    return (
+      <div className="stats-page">
+        <div className="skeleton-loader-wrap">
+          <div className="skeleton-shimmer skeleton-header-box" />
+          <div className="skeleton-grid-4">
+            <div className="skeleton-shimmer skeleton-stat-card" />
+            <div className="skeleton-shimmer skeleton-stat-card" />
+            <div className="skeleton-shimmer skeleton-stat-card" />
+            <div className="skeleton-shimmer skeleton-stat-card" />
+          </div>
+          <div className="skeleton-shimmer skeleton-chart-panel" />
+        </div>
+      </div>
+    );
   }
 
   if (error) {

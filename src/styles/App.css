@@ -512,3 +512,54 @@ button {
     min-width: 520px;
   }
 }
+
+/* Skeleton Shimmer Loading States */
+.skeleton-loader-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #151d18 0%,
+    #1f2b23 50%,
+    #151d18 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer-anim 1.6s infinite ease-in-out;
+  border-radius: 12px;
+}
+
+@keyframes skeleton-shimmer-anim {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-header-box {
+  height: 70px;
+  width: 320px;
+  margin-bottom: 8px;
+}
+
+.skeleton-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.skeleton-stat-card {
+  height: 110px;
+  border: 1px solid #26342b;
+}
+
+.skeleton-chart-panel {
+  height: 280px;
+  border: 1px solid #26342b;
+}
