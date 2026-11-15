@@ -27,10 +27,9 @@ function History() {
   const [error, setError] = useState("");
 
   const fetchHistory = async () => {
+    setLoading(true);
+    setError("");
     try {
-      setLoading(true);
-      setError("");
-
       const response = await fetch(API_URL);
       const data = await response.json();
 
@@ -47,7 +46,36 @@ function History() {
   };
 
   useEffect(() => {
-    fetchHistory();
+    let ignore = false;
+
+    async function loadInitialHistory() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        if (ignore) return;
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Failed to load workout history");
+        }
+
+        setWorkouts(data.workouts);
+      } catch (err) {
+        if (!ignore) {
+          setError(err.message);
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadInitialHistory();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const handleDelete = async (workoutId) => {
@@ -93,7 +121,7 @@ function History() {
       <div className="history-page">
         <h1>Workout History</h1>
         <p className="history-error">{error}</p>
-        <button className="history-retry" onClick={fetchHistory}>
+        <button className="history-retry" onClick={() => fetchHistory(true)}>
           Try Again
         </button>
       </div>
