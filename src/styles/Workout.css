@@ -820,3 +820,107 @@
   color: #ffffff;
   background-color: rgba(255, 255, 255, 0.08);
 }
+
+/* Floating Rest Timer Widget */
+.floating-rest-timer {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #151d18;
+  border: 1px solid #386b4a;
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(165, 230, 185, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-rest-timer.timer-finished {
+  border-color: #ffb703;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 183, 3, 0.3);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.rest-timer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rest-timer-icon {
+  font-size: 22px;
+}
+
+.rest-timer-title {
+  color: #8a9c90;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  max-width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rest-timer-countdown {
+  color: #a5e6b9;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.rest-timer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rest-timer-btn {
+  background: #1c2b20;
+  border: 1px solid #284432;
+  color: #e0e6e2;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rest-timer-btn:hover {
+  background: #254b34;
+  color: #a5e6b9;
+}
+
+.rest-timer-btn.close {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.rest-timer-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #a5e6b9;
+  transition: width 1s linear;
+}
+
+.timer-finished .rest-timer-progress-bar {
+  background: #ffb703;
+}

@@ -39,6 +39,15 @@ export default function StartWorkout() {
   const [lastSessionSummary, setLastSessionSummary] = useState(null);
   const [completedSets, setCompletedSets] = useState({});
 
+  // Rest interval countdown timer state
+  const [restTimer, setRestTimer] = useState({
+    active: false,
+    remainingSeconds: 0,
+    totalSeconds: 60,
+    exerciseName: "",
+    finished: false
+  });
+
   const activeRoutine = WEEKLY_ROUTINE[selectedDay] || WEEKLY_ROUTINE.mon;
   const isSelectedDayToday = selectedDay === todayKey;
 
@@ -55,6 +64,24 @@ export default function StartWorkout() {
     };
   }, [isSessionActive]);
 
+  // Rest interval countdown countdown effect
+  useEffect(() => {
+    let interval = null;
+    if (restTimer.active && restTimer.remainingSeconds > 0) {
+      interval = setInterval(() => {
+        setRestTimer((prev) => {
+          if (prev.remainingSeconds <= 1) {
+            return { ...prev, remainingSeconds: 0, finished: true };
+          }
+          return { ...prev, remainingSeconds: prev.remainingSeconds - 1 };
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [restTimer.active, restTimer.remainingSeconds]);
+
   const formatStopwatchTime = (totalSec) => {
     const mins = Math.floor(totalSec / 60);
     const secs = totalSec % 60;
@@ -66,13 +93,46 @@ export default function StartWorkout() {
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  // Toggle set completion checkbox
+  // Toggle set completion checkbox and trigger rest timer
   const toggleSet = (exerciseId, setIdx) => {
     const key = `${exerciseId}-${setIdx}`;
+    const willBeCompleted = !completedSets[key];
+
     setCompletedSets(prev => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: willBeCompleted
     }));
+
+    if (willBeCompleted) {
+      const currentEx = activeRoutine.exercises?.find((e) => e.id === exerciseId);
+      const restSec = currentEx?.restSeconds || 60;
+      setRestTimer({
+        active: true,
+        remainingSeconds: restSec,
+        totalSeconds: restSec,
+        exerciseName: currentEx?.name || "Exercise",
+        finished: false
+      });
+    }
+  };
+
+  const adjustRestTime = (secondsToAdd) => {
+    setRestTimer(prev => ({
+      ...prev,
+      remainingSeconds: Math.max(0, prev.remainingSeconds + secondsToAdd),
+      totalSeconds: Math.max(prev.totalSeconds, prev.remainingSeconds + secondsToAdd),
+      finished: false
+    }));
+  };
+
+  const closeRestTimer = () => {
+    setRestTimer({
+      active: false,
+      remainingSeconds: 0,
+      totalSeconds: 60,
+      exerciseName: "",
+      finished: false
+    });
   };
 
   // Handle session finish: auto marks workout as completed!
@@ -359,6 +419,63 @@ export default function StartWorkout() {
           </div>
         )}
       </div>
+
+      {/* Floating Rest Timer Widget */}
+      {restTimer.active && (
+        <div className={`floating-rest-timer ${restTimer.finished ? "timer-finished" : ""}`}>
+          <div className="rest-timer-left">
+            <span className="rest-timer-icon">{restTimer.finished ? "🔔" : "⏳"}</span>
+            <div>
+              <div className="rest-timer-title">
+                {restTimer.finished
+                  ? "Rest Complete! Next set awaits"
+                  : `Resting (${restTimer.exerciseName})`}
+              </div>
+              <div className="rest-timer-countdown">
+                {formatStopwatchTime(restTimer.remainingSeconds)}
+              </div>
+            </div>
+          </div>
+
+          <div className="rest-timer-actions">
+            {!restTimer.finished && (
+              <>
+                <button
+                  type="button"
+                  className="rest-timer-btn"
+                  onClick={() => adjustRestTime(-15)}
+                  title="Minus 15s"
+                >
+                  -15s
+                </button>
+                <button
+                  type="button"
+                  className="rest-timer-btn"
+                  onClick={() => adjustRestTime(30)}
+                  title="Plus 30s"
+                >
+                  +30s
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              className="rest-timer-btn close"
+              onClick={closeRestTimer}
+            >
+              {restTimer.finished ? "Dismiss" : "Skip"}
+            </button>
+          </div>
+
+          {/* Progress Bar */}
+          <div
+            className="rest-timer-progress-bar"
+            style={{
+              width: `${(restTimer.remainingSeconds / (restTimer.totalSeconds || 1)) * 100}%`
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
