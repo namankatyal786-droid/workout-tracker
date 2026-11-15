@@ -95,6 +95,20 @@ export default function StartWorkout() {
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
+  // Convert target weight string (e.g. "60 kg") dynamically to lbs if preferred
+  const formatDisplayWeight = (targetWeightStr) => {
+    if (!targetWeightStr || typeof targetWeightStr !== "string") return targetWeightStr;
+    const preferredUnit = localStorage.getItem("preferred_unit") || "kg";
+    if (preferredUnit === "kg") return targetWeightStr;
+
+    const match = targetWeightStr.match(/^(\d+(?:\.\d+)?)\s*kg$/i);
+    if (!match) return targetWeightStr;
+
+    const kgValue = parseFloat(match[1]);
+    const lbsValue = Math.round(kgValue * 2.20462);
+    return `${lbsValue} lbs`;
+  };
+
   // Toggle set completion checkbox and trigger rest timer
   const toggleSet = (exerciseId, setIdx) => {
     const key = `${exerciseId}-${setIdx}`;
@@ -379,7 +393,7 @@ export default function StartWorkout() {
                       </div>
                       <div className="metric-box">
                         <span className="metric-label">TARGET</span>
-                        <span className="metric-value">{exercise.targetWeight}</span>
+                        <span className="metric-value">{formatDisplayWeight(exercise.targetWeight)}</span>
                       </div>
                       <div className="metric-box">
                         <span className="metric-label">REST</span>
@@ -408,7 +422,9 @@ export default function StartWorkout() {
                               onClick={() => toggleSet(exercise.id, sIdx)}
                             >
                               <span>{isDone ? "✓ Set" : "Set"} {sIdx + 1}</span>
-                              <span className="set-check-weight">{exercise.targetWeight}</span>
+                              <span className="set-check-weight">
+                                {formatDisplayWeight(exercise.targetWeight)}
+                              </span>
                             </button>
                           );
                         })}
