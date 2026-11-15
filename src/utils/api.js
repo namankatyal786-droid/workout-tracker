@@ -1,7 +1,9 @@
 // API Helper for Workout Tracker Mini Games
 // Viva point: Yeh utility function frontend se Express backend API ko call karne ke liye use hoti hai.
 
-const API_BASE_URL = "http://localhost:5001/api";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://workout-tracker-production-a67a1737.up.railway.app/api";
 
 // College demo ke liye default demo user UUID
 const DEMO_USER_ID = "c56a4180-65aa-42ec-a945-5fd21dec0538";
