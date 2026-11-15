@@ -6,6 +6,7 @@ import Stats from "./pages/Stats";
 import MiniGames from "./pages/MiniGames";
 import GamePlayer from "./pages/GamePlayer";
 import StartWorkout from "./pages/StartWorkout";
+import ExerciseLibrary from "./pages/ExerciseLibrary";
 import "./styles/App.css";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
       return <StartWorkout />;
     }
 
+    if (activePage === "exercises") return <ExerciseLibrary />;
     if (activePage === "history") return <History />;
     if (activePage === "stats") return <Stats />;
     if (activePage === "dashboard") return <Dashboard />;

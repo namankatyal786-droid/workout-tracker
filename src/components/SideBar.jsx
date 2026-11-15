@@ -1,6 +1,7 @@
 const navigationItems = [
   { id: "dashboard", icon: "▦", label: "Dashboard" },
   { id: "workout", icon: "↗", label: "Start Workout" },
+  { id: "exercises", icon: "📚", label: "Exercise Library" },
   { id: "history", icon: "◷", label: "History" },
   { id: "stats", icon: "▥", label: "Stats" },
   { id: "mini-games", icon: "🎮", label: "Mini Games" },
