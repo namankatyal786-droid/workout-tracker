@@ -30,9 +30,22 @@ The application is designed with a focus on usability, performance, and reliable
 - Reuse existing templates.
 
 ### Exercise Library
-- Browse available exercises.
-- Organize exercises by muscle group.
-- Search and select exercises.
+- Browse complete catalog with muscle group filters (Chest, Back, Shoulders, Arms, Legs, Core).
+- Equipment category filters (Barbell, Dumbbell, Cable, Machine, Bodyweight).
+- Instant search filtering.
+- Interactive modal with form cues, execution tips, and target muscle breakdown.
+- REST API integration via `/api/exercises`.
+
+### Active Workout & Rest Timer
+- Real-time session stopwatch timer (elapsed HH:MM:SS).
+- Interactive floating rest timer countdown with +30s/-15s adjustments and completion chime.
+- Session summary banner upon workout completion.
+- One-click JSON data backup export from workout history.
+
+### Application Settings
+- Athlete profile customization (name, email, training goal, experience level).
+- Unit toggle (Kilograms vs. Pounds) with persistent storage.
+- Real-time backend server health check & latency diagnostic.
 
 ### Training History
 - View previous workout sessions.
@@ -160,17 +173,17 @@ Design principles:
 - [x] Dashboard UI
 - [x] Sidebar navigation
 - [x] Workout statistics UI
-- [ ] Exercise library
-- [ ] Workout logging functionality
-- [ ] Workout templates
-- [ ] Workout history
-- [ ] Personal records tracking
-- [ ] Statistics and analytics
-- [ ] PostgreSQL integration
-- [ ] Prisma ORM integration
-- [ ] Offline data persistence
-- [ ] Data synchronization
-- [ ] Application packaging and distribution
+- [x] Exercise library (Search, Muscle Filters, Equipment Filter & Detail Modal)
+- [x] Live workout session stopwatch & duration tracking
+- [x] Automated rest interval countdown timer with audio alert preference
+- [x] Settings & User Profile management
+- [x] Workout history logging & JSON data backup export
+- [x] Personal records tracking
+- [x] Statistics and volume analytics
+- [x] Mini Games integration (WebGL Unity builds + Leaderboards)
+- [x] PostgreSQL & Prisma ORM integration
+- [x] Offline data persistence & Railway production API integration
+- [ ] Application packaging and distribution (.dmg / .exe installers)
 
 ---
 
