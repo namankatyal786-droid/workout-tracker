@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { WEEKLY_ROUTINE, DAY_KEYS } from "../data/routineData";
+import { playRestTimerChime } from "../utils/audio";
 import "../styles/Workout.css";
 
 export default function StartWorkout() {
@@ -71,6 +72,7 @@ export default function StartWorkout() {
       interval = setInterval(() => {
         setRestTimer((prev) => {
           if (prev.remainingSeconds <= 1) {
+            playRestTimerChime();
             return { ...prev, remainingSeconds: 0, finished: true };
           }
           return { ...prev, remainingSeconds: prev.remainingSeconds - 1 };
