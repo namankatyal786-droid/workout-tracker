@@ -112,6 +112,22 @@ function History() {
     }
   };
 
+  const handleExportHistory = () => {
+    if (!workouts || workouts.length === 0) return;
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(workouts, null, 2)
+    )}`;
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", jsonString);
+    downloadAnchor.setAttribute(
+      "download",
+      `workout_tracker_history_${new Date().toISOString().slice(0, 10)}.json`
+    );
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
   if (loading) {
     return (
       <div className="history-page">
@@ -143,9 +159,22 @@ function History() {
           </p>
         </div>
 
-        <div className="history-total">
-          <strong>{workouts.length}</strong>
-          <span>Total Workouts</span>
+        <div className="history-header-actions">
+          <div className="history-total">
+            <strong>{workouts.length}</strong>
+            <span>Total Workouts</span>
+          </div>
+
+          {workouts.length > 0 && (
+            <button
+              type="button"
+              className="btn-export-history"
+              onClick={handleExportHistory}
+              title="Download workouts as JSON backup"
+            >
+              <span>⬇</span> Export JSON
+            </button>
+          )}
         </div>
       </div>
 

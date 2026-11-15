@@ -52,6 +52,35 @@
   color: #9aa99e;
 }
 
+.history-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-export-history {
+  background: #14251c;
+  border: 1px solid #294535;
+  color: #a5d6ae;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-export-history:hover {
+  background: #254b34;
+  border-color: #386b4a;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
 .history-list {
   display: flex;
   flex-direction: column;
