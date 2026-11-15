@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import "../styles/History.css";
 
-const API_URL = "http://localhost:5001/api/history";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://workout-tracker-production-a67a1737.up.railway.app/api";
+
+const API_URL = `${API_BASE_URL}/history`;
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString("en-IN", {
