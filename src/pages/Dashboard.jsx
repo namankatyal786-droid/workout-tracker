@@ -5,35 +5,108 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   "https://workout-tracker-production-a67a1737.up.railway.app/api";
 
+const FALLBACK_DASHBOARD = {
+  success: true,
+  stats: {
+    totalWorkouts: 12,
+    totalVolume: 42266,
+    workoutTime: 14.5,
+    currentStreak: 3,
+  },
+  weeklyActivity: [
+    { day: "Mon", date: "2026-11-09", workouts: 1 },
+    { day: "Tue", date: "2026-11-10", workouts: 1 },
+    { day: "Wed", date: "2026-11-11", workouts: 0 },
+    { day: "Thu", date: "2026-11-12", workouts: 1 },
+    { day: "Fri", date: "2026-11-13", workouts: 1 },
+    { day: "Sat", date: "2026-11-14", workouts: 0 },
+    { day: "Sun", date: "2026-11-15", workouts: 1 },
+  ],
+  personalRecords: [
+    { exercise: "Barbell Bench Press", value: 100, recordType: "MAX_WEIGHT", date: new Date().toISOString() },
+    { exercise: "Lat Pulldown", value: 55, recordType: "ESTIMATED_1RM", date: new Date().toISOString() },
+    { exercise: "Barbell Back Squat", value: 120, recordType: "MAX_WEIGHT", date: new Date().toISOString() },
+  ],
+  recentWorkouts: [
+    { id: "demo-1", name: "Push Day", date: new Date().toISOString(), exercises: 4, duration: 52 },
+    { id: "demo-2", name: "Pull Day", date: new Date(Date.now() - 86400000).toISOString(), exercises: 3, duration: 48 },
+    { id: "demo-3", name: "Legs & Core", date: new Date(Date.now() - 86400000 * 3).toISOString(), exercises: 4, duration: 60 },
+  ],
+};
+
 function Dashboard() {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+
+  const fetchDashboard = async (showLoading = false) => {
+    try {
+      if (showLoading) {
+        setLoading(true);
+      }
+      setError("");
+
+      const response = await fetch(`${API_BASE_URL}/dashboard`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch dashboard data");
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || "Dashboard request failed");
+      }
+
+      setDashboard(data);
+      setIsOfflineMode(false);
+    } catch (err) {
+      console.warn("Dashboard fetch failed, using fallback metrics:", err.message);
+      setDashboard(FALLBACK_DASHBOARD);
+      setIsOfflineMode(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDashboard = async () => {
+    let ignore = false;
+
+    async function initialFetch() {
       try {
         const response = await fetch(`${API_BASE_URL}/dashboard`);
+        if (ignore) return;
 
         if (!response.ok) {
           throw new Error("Failed to fetch dashboard data");
         }
 
         const data = await response.json();
-
         if (!data.success) {
           throw new Error(data.message || "Dashboard request failed");
         }
 
         setDashboard(data);
+        setIsOfflineMode(false);
       } catch (err) {
-        setError(err.message);
+        if (!ignore) {
+          console.warn("Dashboard fetch failed, using fallback metrics:", err.message);
+          setDashboard(FALLBACK_DASHBOARD);
+          setIsOfflineMode(true);
+        }
       } finally {
-        setLoading(false);
+        if (!ignore) {
+          setLoading(false);
+        }
       }
-    };
+    }
 
-    fetchDashboard();
+    initialFetch();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (loading) {
@@ -82,8 +155,20 @@ function Dashboard() {
           </p>
         </div>
 
-        <div className="dashboard-date">
-          {formatDate(new Date())}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+          {isOfflineMode && (
+            <button
+              type="button"
+              className="offline-mode-pill"
+              onClick={() => fetchDashboard(true)}
+              title="Click to retry connecting to production backend"
+            >
+              ⚠️ Offline Demo • Reconnect
+            </button>
+          )}
+          <div className="dashboard-date">
+            {formatDate(new Date())}
+          </div>
         </div>
       </div>
 
