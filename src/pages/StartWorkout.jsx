@@ -40,6 +40,10 @@ export default function StartWorkout() {
   const [lastSessionSummary, setLastSessionSummary] = useState(null);
   const [completedSets, setCompletedSets] = useState({});
 
+  // Session reflection and energy rating
+  const [sessionNote, setSessionNote] = useState("");
+  const [energyRating, setEnergyRating] = useState(4);
+
   // Rest interval countdown timer state
   const [restTimer, setRestTimer] = useState({
     active: false,
@@ -159,7 +163,9 @@ export default function StartWorkout() {
     setLastSessionSummary({
       duration: formatStopwatchTime(finalSeconds),
       completedSetsCount: setsCount,
-      routineName: activeRoutine.tag || activeRoutine.dayName
+      routineName: activeRoutine.tag || activeRoutine.dayName,
+      energy: energyRating,
+      note: sessionNote.trim()
     });
 
     setIsSessionActive(false);
@@ -226,7 +232,19 @@ export default function StartWorkout() {
                 <span>•</span>
                 <span>Duration: <strong>{lastSessionSummary.duration}</strong></span>
                 <span>•</span>
-                <span>Sets Completed: <strong>{lastSessionSummary.completedSetsCount}</strong></span>
+                <span>Sets: <strong>{lastSessionSummary.completedSetsCount}</strong></span>
+                {lastSessionSummary.energy && (
+                  <>
+                    <span>•</span>
+                    <span>Energy: <strong>{"⚡".repeat(lastSessionSummary.energy)}</strong></span>
+                  </>
+                )}
+                {lastSessionSummary.note && (
+                  <>
+                    <span>•</span>
+                    <span><em>&quot;{lastSessionSummary.note}&quot;</em></span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -434,6 +452,53 @@ export default function StartWorkout() {
                 </div>
               ))}
             </div>
+
+            {/* Session Reflection & Energy Input */}
+            {isSessionActive && (
+              <div className="session-reflection-card">
+                <div className="reflection-title-row">
+                  <span className="reflection-icon">📝</span>
+                  <h4>Session Reflection & Energy</h4>
+                </div>
+                <div className="reflection-fields-grid">
+                  <div className="energy-selector-group">
+                    <label>Perceived Energy:</label>
+                    <div className="energy-rating-buttons">
+                      {[1, 2, 3, 4, 5].map((lvl) => (
+                        <button
+                          key={lvl}
+                          type="button"
+                          className={`energy-btn ${energyRating >= lvl ? "active" : ""}`}
+                          onClick={() => setEnergyRating(lvl)}
+                        >
+                          ⚡
+                        </button>
+                      ))}
+                      <span className="energy-label-text">
+                        {energyRating === 5
+                          ? "Beast Mode 🔥"
+                          : energyRating === 4
+                          ? "High Energy ⚡"
+                          : energyRating === 3
+                          ? "Moderate 👍"
+                          : "Fatigued 😴"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="session-note-group">
+                    <label>Session Notes (Optional):</label>
+                    <input
+                      type="text"
+                      className="session-note-input"
+                      placeholder="e.g., Felt strong on barbell bench press, good shoulder stability..."
+                      value={sessionNote}
+                      onChange={(e) => setSessionNote(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
