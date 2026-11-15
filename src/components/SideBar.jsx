@@ -8,6 +8,22 @@ const navigationItems = [
 ];
 
 function Sidebar({ activePage, onNavigate }) {
+  let athleteName = "Arnav Maheshwari";
+  let athleteGoal = "Personal Account";
+
+  try {
+    const saved = localStorage.getItem("workout_athlete_profile");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.name) athleteName = parsed.name;
+      if (parsed.fitnessGoal) athleteGoal = parsed.fitnessGoal;
+    }
+  } catch {
+    // Fallback to default
+  }
+
+  const avatarInitial = athleteName.trim().charAt(0).toUpperCase() || "A";
+
   return (
     <div className="sidebar">
       <div className="sidebar-brand">
@@ -48,11 +64,18 @@ function Sidebar({ activePage, onNavigate }) {
           <span>Settings</span>
         </button>
 
-        <div className="sidebar-profile">
-          <div className="profile-avatar">S</div>
+        <div
+          className="sidebar-profile"
+          onClick={() => onNavigate("settings")}
+          style={{ cursor: "pointer" }}
+          title="Open Athlete Profile & Settings"
+        >
+          <div className="profile-avatar">{avatarInitial}</div>
           <div className="profile-info">
-            <strong>Your Profile</strong>
-            <span>Personal Account</span>
+            <strong>{athleteName}</strong>
+            <span style={{ maxWidth: "140px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
+              {athleteGoal}
+            </span>
           </div>
         </div>
       </div>
